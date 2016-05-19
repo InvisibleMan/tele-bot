@@ -9,4 +9,5 @@
                  [environ "1.0.1"]
                  [cheshire "5.5.0"]
                  [http-kit "2.1.19"]]
+  :profiles {:dev {:plugins [[com.jakemccrary/lein-test-refresh "0.15.0"]]}}
   :main tele-bot.app)

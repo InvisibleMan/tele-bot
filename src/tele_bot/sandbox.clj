@@ -1,3 +1,5 @@
+(comment 
+
 (ns tele-bot.sandbox
   (:require [clojail.core :refer [sandbox]]
             [clojail.testers :refer [secure-tester blanket]])
@@ -33,3 +35,4 @@
       {:status false
        :input s
        :result (.getMessage e)})))
+)
