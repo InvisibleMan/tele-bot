@@ -6,10 +6,17 @@ ClojureBot is a Telegram bot that lets you evaluate your own Clojure expressions
 ## Youtube-dl's examples
 <https://github.com/rg3/youtube-dl/blob/master/README.md#readme>
 
-`(sh "youtube-dl" "--no-progress -s -f mp4/best https://m.youtube.com/watch?v=fOaTUQqj2m0")`
 youtube-dl:
 * Получить имя файла: `youtube-dl --get-filename -f mp4/best https://m.youtube.com/watch\?v\=fOaTUQqj2m0`
 * Запустить в симуляционном режиме: `youtube-dl -s -f mp4/best https://m.youtube.com/watch\?v\=fOaTUQqj2m0`
+
+
+## Запуск shell-комманды
+(use '[clojure.java.shell :only [sh]])
+
+`(sh "resources/sleep.sh")`
+`(sh "youtube-dl" "--no-progress -s -f mp4/best https://m.youtube.com/watch?v=fOaTUQqj2m0")`
+
 
 
 ## Usage
