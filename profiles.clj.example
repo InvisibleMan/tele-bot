@@ -1,0 +1,6 @@
+{:dev
+	{:env
+		{:api-key "DEV_SECRED_API_KEY"}}
+:prod
+	{:env
+		{:api-key "PROD_DEV_SECRED_API_KEY"}}}

@@ -11,5 +11,6 @@
                  [http-kit "2.1.19"]
                  [org.clojure/core.async "0.3.465"]
                  ]
+  :plugins [[lein-environ "1.1.0"]]
   :profiles {:dev {:plugins [[com.jakemccrary/lein-test-refresh "0.15.0"]]}}
   :main tele-bot.app)

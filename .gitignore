@@ -1,4 +1,5 @@
 .lein-env
+profiles.clj
 *.sublime*
 .lein-repl-history
 log.txt

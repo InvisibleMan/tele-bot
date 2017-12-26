@@ -17,7 +17,9 @@ youtube-dl:
 `(sh "resources/sleep.sh")`
 `(sh "youtube-dl" "--no-progress -s -f mp4/best https://m.youtube.com/watch?v=fOaTUQqj2m0")`
 
-
+## Переменные окружения
+- Берутся из profiles.clj и заносятся в .lein-env (это если установлен plugin environ)
+- `lein with-profile +prod repl` можно запустить специальное окружение
 
 ## Usage
 
