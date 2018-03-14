@@ -1,49 +1,13 @@
 (ns tele-bot.bot
   (:require [clojure.string :as string]
             [tele-bot.utils :as ut]
-            ;; [tele-bot.sandbox :as sb]
             [tele-bot.telegapi :as tg]
-            [tele-bot.responses :as rsp]
             [tele-bot.utils :refer [tee]]))
 
-
-;; ============================================
-;; Command responses
-
-(defn- eval-command [args fmt]
-  ;; (-> args sb/eval-expr fmt)
-  "Command eval result")
-
-
-;; String -> {:command :args}
-(defn- split-command-args
-  "
-   Splits the incoming command string
-   into commands and arguments
-  "
-  [command]
-  (let [commands (string/split command #" " 2)]
-    {:command (string/trim (first commands))
-     :args (when (second commands)
-             (string/trim (second commands)))}))
-
-
 ;; String -> String
-(defn- command->response [command-string fmt]
-  (let [command-map (split-command-args command-string)
-        command (:command command-map)]
-    (cond
-      (= "/eval" command) (eval-command
-                            (:args command-map) fmt)
-      (or (= "/start" command)
-          (= "/help" command)) rsp/start-message
-      :else rsp/error-message)))
-
-
-;; String -> String
-(defn- command->response2 [command-string fmt]
-  (str "Sorry, I'm dummy bot. Echo:\n"
-    command-string))
+(defn- build-response [msg]
+  (str "Sorry, I'm dummy bot. Echo:\n\n"
+    msg))
 
 ;; ============================================
 ;; Telegram API Integration functions
@@ -51,12 +15,11 @@
 ;; {} -> {}
 ;; Assocs to the message the appropiate response
 (defn- process-update [element]
-  (println element)
+  (ut/logger (str "RECEIVED MESSAGE: " (:message element)))
   (-> element
       (assoc :message
-        (command->response2
-          (:message element)
-          rsp/eval-response))))
+        (build-response
+          (:message element)))))
 
 
 ;; {} -> {}
@@ -88,7 +51,6 @@
 ;; ->
 (defn run []
   (let [welcome_msg "Tele-bot Started!!"]
-    (println welcome_msg)
     (ut/logger welcome_msg))
   (let [*update-id* (atom (tg/get-last-offset))]
     (while true

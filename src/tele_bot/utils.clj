@@ -5,6 +5,7 @@
 
 ;; String ->
 (defn logger [message]
+  (println message)
   (spit log-file (str message "\n") :append true))
 
 

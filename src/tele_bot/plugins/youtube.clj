@@ -36,10 +36,10 @@
 ;; String -> Bool
 (defn is-youtube-link [word]
   "Проверяет является 'слово ссылкой youtube'"
-  (not (nil? (cond
-    (some? (re-find #"youtube\.com" word))
-    (some? (re-find #"youtu\.be" word))
-    :else false))))
+  (cond
+    (some? (re-find #"youtube\.com" word)) true
+    (some? (re-find #"youtu\.be" word)) true
+    :else false))
 
 ;; String -> String
 (defn fetch-url [msg]
@@ -55,6 +55,4 @@
       (do
         (async/>!! dowload-queue url)
         true))))
-
-
 

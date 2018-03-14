@@ -9,7 +9,6 @@
   (if (empty? message)
     message
     (do
-      (println message)
       (ut/logger message)
       message)))
 
