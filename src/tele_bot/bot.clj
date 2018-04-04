@@ -23,9 +23,14 @@
 
 ;; Запускает обработку принятых сообщений
 (defn- process [msgs]
-  (->> msgs
-       (map (partial handle handlers reply-to))
-       ))
+  (log/debug "Start process")
+  (try
+    (log/debug (first msgs))
+    (doall
+         (map (partial handle handlers reply-to) msgs))
+    (catch Exception e
+          (log/error e)))
+  (log/debug "End process"))
 
 ;; ============================================
 ;; Telegram API Integration functions
@@ -42,13 +47,16 @@
         (let [items (tg/get-update-map @*update-id*)
               msgs (map tg/get-response-info items)]
 
-          (if msgs
+          (if (not (empty? msgs))
             (do
+              (log/debug (str "MSGS: " msgs))
               (reset! *update-id* (tg/get-next-offset msgs))
+              (log/debug (str "UPDATE-ID: " @*update-id*))
               (future
-                (log/info "Start future")
-                (process msgs)))
-            (Thread/sleep timeout-ms)))
+                (process msgs)
+                )))
+          
+          (Thread/sleep timeout-ms))
 
         (catch com.fasterxml.jackson.core.JsonParseException e
           (log/error e))

@@ -7,7 +7,7 @@
 (defn no-access-f [allow-users-id-f msg]
   (let
       [msg-user-id (:chat-id msg)
-       users-id (allow-users-id-f)]
+       users-id (seq (allow-users-id-f))]
     (println (str "Access handler. UserId: " msg-user-id))
     (println (str "Access handler. UserSId: " users-id))
 

@@ -38,7 +38,11 @@
       (is (no-access-f #(identity (list nil)) {:chat-id "3"})))
 
     (testing "Проверка функции проверки доступа 5"
-      (is (not (no-access-f #(identity (list "12")) {:chat-id "12"}))))))
+      (is (not (no-access-f #(identity (list "12")) {:chat-id "12"}))))
+
+(testing "Проверка функции проверки доступа 5"
+      (is (not (no-access-f #(identity (vec ["12"])) {:chat-id 12}))))
+    ))
 
 (deftest check-access-test
   (testing "Проверка обработчика по проверке прав 1"
