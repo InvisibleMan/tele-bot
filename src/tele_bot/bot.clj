@@ -1,46 +1,31 @@
 (ns tele-bot.bot
   (:require [clojure.string :as string]
+            [environ.core :refer [env]]
             [tele-bot.utils :as ut]
+            [tele-bot.utils :as log]
             [tele-bot.telegapi :as tg]
+            [tele-bot.handlers :as hrs]
             [tele-bot.utils :refer [tee]]))
 
-;; String -> String
-(defn- build-response [msg]
-  (str "Sorry, I'm dummy bot. Echo:\n\n"
-    msg))
+(def ^:private handlers
+  (list
+   (partial hrs/check-access #(env :users-id))
+   hrs/empty))
 
-;; ============================================
-;; Telegram API Integration functions
+;; Собственно пытается обработать сообщение
+(defn handle [hdrs send-f msg]
+  (some
+   #(% msg send-f)
+   hdrs))
 
-;; {} -> {}
-;; Assocs to the message the appropiate response
-(defn- process-update [element]
-  (ut/logger (str "RECEIVED MESSAGE: " (:message element)))
-  (-> element
-      (assoc :message
-        (build-response
-          (:message element)))))
+(defn- reply-to [orig text]
+  (tg/send-message (:chat-id orig) text))
 
-
-;; {} -> {}
-;; Map adapter for send-message
-(defn- map-send [element]
-  (tee element
-       (#(tg/send-message (get % :chat-id) (get % :message)))))
-
-
-;; Seq -> Natural
-;; Processes each element of the given sequence
-;; and performs the appropiate action
-;;
-;; Returns next update id to request to the server
-(defn- seq->response [update-seq]
-  (->> update-seq
-       (map tg/get-response-info)
-       (map process-update)
-       (map map-send)
-       tg/get-next-offset))
-
+;; Запускает обработку принятых сообщений
+(defn- process [msgs]
+  (->> msgs
+       (map (partial handle handlers reply-to))
+       ))
 
 ;; ============================================
 ;; Telegram API Integration functions
@@ -50,16 +35,21 @@
 
 ;; ->
 (defn run []
-  (let [welcome_msg "Tele-bot Started!!"]
-    (ut/logger welcome_msg))
-  (let [*update-id* (atom (tg/get-last-offset))]
+  (log/info "Tele-bot Started!!")
+  (let [*update-id* (atom 0)]
     (while true
       (try
-        (if (seq (tg/get-update-map @*update-id*))
-          (->> (seq->response (tg/get-update-map @*update-id*))
-               (reset! *update-id*))
-          (Thread/sleep timeout-ms))
+        (let [items (tg/get-update-map @*update-id*)
+              msgs (map tg/get-response-info items)]
+
+          (if msgs
+            (do
+              (reset! *update-id* (tg/get-next-offset msgs))
+              (future
+                (log/info "Start future")
+                (process msgs)))
+            (Thread/sleep timeout-ms)))
 
         (catch com.fasterxml.jackson.core.JsonParseException e
-          (ut/logger e))
+          (log/error e))
         ))))

@@ -8,6 +8,14 @@
   (println message)
   (spit log-file (str message "\n") :append true))
 
+(defn info [msg]
+  (logger (str "INFO: " msg)))
+
+(defn error [msg]
+  (logger (str "ERROR: " msg)))
+
+(defn debug [msg]
+  (logger (str "DEBUG: " msg)))
 
 ;; String ->
 (defn log-error [error]

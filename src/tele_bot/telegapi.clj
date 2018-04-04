@@ -1,5 +1,6 @@
 (ns tele-bot.telegapi
   (:require [tele-bot.utils :as ut]
+            [tele-bot.utils :as log]
             [environ.core :refer [env]]
             [org.httpkit.client :as http]
             [tele-bot.telegapi-util :as tgu]
@@ -55,7 +56,9 @@
    If no offset is given, request the entire queue
   "
   ([] (get-update-map 0))
-  ([offset] (-> (http/get update-url
+  ([offset]
+   (log/debug (str "HTTP Request. GET: " update-url ))
+   (-> (http/get update-url
                           {:query-params {:offset offset}})
                 (tgu/get-result-from-telegram-response))))
 
@@ -73,8 +76,8 @@
 (defn get-response-info [response-block]
   (let [chat-id (tgu/get-chat-key response-block)
         update-id (tgu/get-update-key response-block)
-        ;; message (tgu/get-response-text response-block)]
-        message (str response-block)]
+        message (tgu/get-response-text response-block)
+        ]
     (hash-map
       :chat-id chat-id
       :message message
