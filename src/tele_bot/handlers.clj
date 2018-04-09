@@ -8,8 +8,11 @@
   (let
       [msg-user-id (:chat-id msg)
        users-id (seq (allow-users-id-f))]
-    (println (str "Access handler. UserId: " msg-user-id))
-    (println (str "Access handler. UserSId: " users-id))
+    (log/debug (str "Access handler. UserId: '"
+                    msg-user-id
+                    "', UserSId: '"
+                    users-id
+                    ""))
 
     (cond
       (nil? msg-user-id) true
@@ -26,6 +29,7 @@
 
 ;; Msg -> Bool
 (defn empty [msg send-f]
+  (log/debug "Empty handler")
   (send-f msg
           (str "I can't understand message: '" (:message msg) "'."))
   true)

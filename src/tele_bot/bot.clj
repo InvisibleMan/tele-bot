@@ -1,35 +1,46 @@
 (ns tele-bot.bot
   (:require [clojure.string :as string]
-            [environ.core :refer [env]]
+            [tele-bot.config :as cfg]
             [tele-bot.utils :as ut]
             [tele-bot.utils :as log]
             [tele-bot.telegapi :as tg]
             [tele-bot.handlers :as hrs]
+            [tele-bot.plugins.youtube :as ytb]
             [tele-bot.utils :refer [tee]]))
 
 (def ^:private handlers
   (list
    (partial hrs/check-access #(env :users-id))
+   ytb/handle
    hrs/empty))
 
 ;; Собственно пытается обработать сообщение
 (defn handle [hdrs send-f msg]
-  (some
-   #(% msg send-f)
-   hdrs))
+  (try
+    (log/debug (str "Start handle MESSAGE: " msg))
+ 
+    (some
+     #(% msg send-f)
+     hdrs)
+
+    (catch Exception e
+      (log/error e)
+      (log/error (first (.getStackTrace e)))
+      (send-f msg e))))
 
 (defn- reply-to [orig text]
+  (log/debug (str "Reply message (On '" (:message-id orig) "'): " text))
+  (tg/send-message (:chat-id orig) (:message-id orig) text))
+
+(defn- send-msg [orig text]
+  (log/debug (str "Send message: " text))
   (tg/send-message (:chat-id orig) text))
 
 ;; Запускает обработку принятых сообщений
 (defn- process [msgs]
   (log/debug "Start process")
-  (try
-    (log/debug (first msgs))
-    (doall
-         (map (partial handle handlers reply-to) msgs))
-    (catch Exception e
-          (log/error e)))
+  (doall
+   (map (partial handle handlers reply-to) msgs))
   (log/debug "End process"))
 
 ;; ============================================
@@ -41,6 +52,7 @@
 ;; ->
 (defn run []
   (log/info "Tele-bot Started!!")
+  (cfg/init)
   (let [*update-id* (atom 0)]
     (while true
       (try
@@ -49,7 +61,6 @@
 
           (if (not (empty? msgs))
             (do
-              (log/debug (str "MSGS: " msgs))
               (reset! *update-id* (tg/get-next-offset msgs))
               (log/debug (str "UPDATE-ID: " @*update-id*))
               (future

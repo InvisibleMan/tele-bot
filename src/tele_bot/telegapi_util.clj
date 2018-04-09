@@ -36,6 +36,12 @@
   (-> response-block
       (get :update_id)))
 
+;; {} -> Natural
+;; Gets the update key of the incoming response
+(defn get-message-id [response-block]
+  (-> response-block
+      (get :message)
+      (get :message_id)))
 
 ;; {} -> Natural
 ;; Gets the message key of the incoming response

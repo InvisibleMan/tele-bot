@@ -76,13 +76,15 @@
 (defn get-response-info [response-block]
   (let [chat-id (tgu/get-chat-key response-block)
         update-id (tgu/get-update-key response-block)
+        message-id (tgu/get-message-id response-block)
         message (tgu/get-response-text response-block)
         ]
     (hash-map
-      :chat-id chat-id
-      :message message
-      :update-id update-id)))
-
+     :raw response-block
+     :message-id message-id
+     :chat-id chat-id
+     :message message
+     :update-id update-id)))
 
 ;; Natural String -!>
 ;; Natural String fn fn -!>
@@ -91,15 +93,25 @@
    Send the given message to the given chat
    If supplied, execute some functions as success / error callbacks
   "
-  ([chat message] (send-message chat message
-                                send-success
-                                ut/log-error))
-
-  ([chat message success-f error-f]
-   (let [options {:form-params {:chat_id chat
+  ([chat-id message]
+   (let [options {:form-params {:chat_id chat-id
                                 :text message}}]
-     (http/post send-message-url options
-                (fn [{:keys [status headers body error]}]
-                  (if error
-                    (error-f error)
-                    (success-f body)))))))
+     (send-msg- options send-success ut/log-error)))
+
+  ([chat-id reply-to-id message] (send-message chat-id reply-to-id message
+                                               send-success
+                                               ut/log-error))
+  
+  ([chat-id reply-to-id message success-f error-f]
+   (let [options {:form-params {:chat_id chat-id
+                                :text message
+                                :reply_to_message_id reply-to-id}}]
+     (send-msg- options success-f error-f))))
+
+
+(defn send-msg- [options success-f error-f]
+  (http/post send-message-url options
+             (fn [{:keys [status headers body error]}]
+               (if error
+                 (error-f error)
+                 (success-f body)))))
