@@ -1,7 +1,7 @@
 (ns tele-bot.handlers
+  (:refer-clojure :exclude [empty])
   (:require [clojure.string :as string]
             [tele-bot.utils :as log]
-            [environ.core :refer [env]]
             ))
 
 (defn no-access-f [allow-users-id-f msg]

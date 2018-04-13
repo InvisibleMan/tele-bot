@@ -1,7 +1,7 @@
 (ns tele-bot.telegapi
   (:require [tele-bot.utils :as ut]
             [tele-bot.utils :as log]
-            [environ.core :refer [env]]
+            [tele-bot.config :as cfg]
             [org.httpkit.client :as http]
             [tele-bot.telegapi-util :as tgu]
             [tele-bot.response-format :as fmt]))
@@ -9,15 +9,13 @@
 
 ;; ============================================
 ;; Telegram API details
-
-(def ^:private api-key (env :api-key))
 (def ^:private api-url "https://api.telegram.org/bot")
-(def ^:private bot-url (str api-url api-key))
 
-(def ^:private self-url (str bot-url "/getMe"))
-(def ^:private update-url (str bot-url "/getUpdates"))
-(def ^:private send-message-url (str bot-url "/sendMessage"))
-
+(defn- api-key [] (cfg/api-key))
+(defn- bot-url [] (str api-url (api-key)))
+(defn- self-url [] (str (bot-url) "/getMe"))
+(defn- update-url [] (str (bot-url) "/getUpdates"))
+(defn- send-message-url [] (str (bot-url) "/sendMessage"))
 
 ;; ============================================
 ;; Custom logger functions
@@ -34,7 +32,7 @@
 ;; -> Natural
 ;; Gets the bot key
 (defn- get-own-key []
-  (-> (http/get self-url)
+  (-> (http/get (self-url))
       tgu/get-result-from-telegram-response
       (get :id)))
 
@@ -57,8 +55,8 @@
   "
   ([] (get-update-map 0))
   ([offset]
-   (log/debug (str "HTTP Request. GET: " update-url ))
-   (-> (http/get update-url
+   (log/debug (str "HTTP Request. GET: " (update-url)))
+   (-> (http/get (update-url)
                           {:query-params {:offset offset}})
                 (tgu/get-result-from-telegram-response))))
 
@@ -86,6 +84,13 @@
      :message message
      :update-id update-id)))
 
+(defn send-msg- [options success-f error-f]
+  (http/post (send-message-url) options
+             (fn [{:keys [status headers body error]}]
+               (if error
+                 (error-f error)
+                 (success-f body)))))
+
 ;; Natural String -!>
 ;; Natural String fn fn -!>
 (defn send-message
@@ -108,10 +113,3 @@
                                 :reply_to_message_id reply-to-id}}]
      (send-msg- options success-f error-f))))
 
-
-(defn send-msg- [options success-f error-f]
-  (http/post send-message-url options
-             (fn [{:keys [status headers body error]}]
-               (if error
-                 (error-f error)
-                 (success-f body)))))

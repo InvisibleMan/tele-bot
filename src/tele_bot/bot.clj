@@ -1,5 +1,6 @@
 (ns tele-bot.bot
   (:require [clojure.string :as string]
+            [clojure.core :as core]
             [tele-bot.config :as cfg]
             [tele-bot.utils :as ut]
             [tele-bot.utils :as log]
@@ -8,9 +9,9 @@
             [tele-bot.plugins.youtube :as ytb]
             [tele-bot.utils :refer [tee]]))
 
-(def ^:private handlers
+(defn handlers []
   (list
-   (partial hrs/check-access #(env :users-id))
+   (partial hrs/check-access #(cfg/users-id))
    ytb/handle
    hrs/empty))
 
@@ -40,7 +41,7 @@
 (defn- process [msgs]
   (log/debug "Start process")
   (doall
-   (map (partial handle handlers reply-to) msgs))
+   (map (partial handle (handlers) reply-to) msgs))
   (log/debug "End process"))
 
 ;; ============================================
