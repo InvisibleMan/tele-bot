@@ -1,0 +1,49 @@
+---
+- name: Create (update) docker image
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Upload the src directory to the docker host
+      synchronize: src=. dest=/tmp
+
+    # - debug:
+    #     msg: "System {{ inventory_hostname }} has ENV vars is: {{users_id}}"
+    # - debug:
+    #     msg: "/home/dlarionov/Downloads:{{save_path}}"
+
+    - name: Build the image
+      command: docker build -t tele_bot:v1 /tmp/tele_bot
+
+    - name: Start container
+      command: docker run -v /var/data/files:/var/data/files tele_bot:v1
+
+    - name: remove container
+      docker_container:
+        name: tele_bot:v1
+        state: absent
+
+    - name: Remove_image
+      docker_image:
+        state: absent
+        force: yes
+        name: tele_bot:v1
+
+    - name: Build the image
+      docker_image:
+        name: tele_bot:v1
+        # tag: v1
+        path: /tmp/tele_bot
+
+    - name: 'Create docker container'
+      docker_container:
+        name: tele_bot
+        image: "tele_bot:v1"
+        recreate: yes
+        restart_policy: no
+        # restart_policy: always
+        env:
+          USERS_ID: '{{users_id}}'
+          API_KEY: '{{api_key}}'
+        volumes:
+          - '{{save_path}}:/var/data/downloads'
+

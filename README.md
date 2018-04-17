@@ -21,6 +21,11 @@ youtube-dl:
 - Берутся из profiles.clj и заносятся в .lein-env (это если установлен plugin environ)
 - `lein with-profile +prod repl` можно запустить специальное окружение
 
+## Deploy
+ - Проверяем что /etc/hosts/ и в ~/.ssh/config задан `telebot_server`
+ - Обновляем контейнер с web-сервером:
+  `ansible-playbook -i hosts deploy-tele_bot-docker.yml --extra-vars "users_id=111,3333 api_key=KEYYY save_path=HOST_SAVE_PATH" --step`
+
 ## Usage
 
 You'll need to get your own [Telegram API key](https://core.telegram.org/bots#3-how-do-i-create-a-bot).

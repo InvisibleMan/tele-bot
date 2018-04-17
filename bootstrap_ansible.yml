@@ -1,0 +1,12 @@
+- hosts: all
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: apt-get update
+      raw: sudo bash -c "test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)"
+
+    - name: apt-get install pip
+      raw: apt install -y python-pip
+
+    - name: apt-get install docker-py
+      raw: pip install docker-py
