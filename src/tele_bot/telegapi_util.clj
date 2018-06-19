@@ -22,10 +22,10 @@
       (#(if (:ok %) (log-message (:result %)) nil))))
 
 
-;; Future<Any> -> {}
+;; Hash -> {}
 ;; Takes the body of the incoming response and parses the result
-(defn get-result-from-telegram-response [future-response]
-  (-> @future-response
+(defn get-result-from-telegram-response [response]
+  (-> response
       (get :body)
       get-result-from-response))
 

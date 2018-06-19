@@ -47,12 +47,9 @@
 ;; ============================================
 ;; Telegram API Integration functions
 
-(def ^:private timeout-ms
-  10000)
-
 ;; ->
 (defn run []
-  (log/info "Tele-bot Started!!")
+  (log/info "Tele-bot Started!")
   (cfg/init)
   (let [*update-id* (atom 0)]
     (while true
@@ -68,7 +65,7 @@
                 (process msgs)
                 )))
           
-          (Thread/sleep timeout-ms))
+          (Thread/sleep @cfg/timeout-ms))
 
         (catch com.fasterxml.jackson.core.JsonParseException e
           (log/error e))

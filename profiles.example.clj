@@ -1,6 +1,6 @@
 {:dev
  {:env
-  {:api-key "DEV_SECRED_API_KEY" :users-id "1111,2222" :save_path "/var/data/"}}
+  {:bot-api-key "DEV_SECRED_API_KEY" :bot-users-id "1111,2222,DEV" :bot-save-path "/var/data/"}}
 :production
  {:env
-  {:api-key "PROD_DEV_SECRED_API_KEY" :users-id "1111,2222" :save_path "/var/data/"}}}
+  {:bot-api-key "PROD_DEV_SECRED_API_KEY" :bot-users-id "1111,2222,PROD" :bot-save-path "/var/data/"}}}

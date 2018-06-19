@@ -8,7 +8,7 @@ TeleBot is a Telegram bot that lets you download youtube videos.
 
 youtube-dl:
 * Получить имя файла: `youtube-dl --get-filename -f mp4/best https://m.youtube.com/watch\?v\=fOaTUQqj2m0`
-* Запустить в симуляционном режиме: `youtube-dl -s -f mp4/best https://m.youtube.com/watch\?v\=fOaTUQqj2m0`
+* Запустить в режиме симуляции: `youtube-dl -s -f mp4/best https://m.youtube.com/watch\?v\=fOaTUQqj2m0`
 
 
 ## Запуск shell-комманды
@@ -19,12 +19,13 @@ youtube-dl:
 
 ## Переменные окружения
 - Берутся из profiles.clj и заносятся в .lein-env (это если установлен plugin environ)
-- `lein with-profile +prod repl` можно запустить специальное окружение
+- `lein with-profile +dev repl` можно запустить специальное окружение
+- `lein with-profile dev run` можно запустить специальное окружение
 
-## Deploy
- - Проверяем что /etc/hosts/ и в ~/.ssh/config задан `telebot_server`
- - Обновляем контейнер с web-сервером:
-  `ansible-playbook -i hosts deploy-tele_bot-docker.yml --extra-vars "users_id=111,3333 api_key=KEYYY save_path=HOST_SAVE_PATH" --step`
+### Обязательные переменные необходимые для запуска:
+- BOT_USERS_ID - список идентификаторов разрешенных пользователей
+- BOT_SAVE_PATH - путь сохранения скаченных файлов
+- BOT_API_KEY - api-ключ 
 
 ## Usage
 

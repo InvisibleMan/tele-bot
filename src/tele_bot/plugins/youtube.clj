@@ -5,8 +5,9 @@
             [tele-bot.config :as cfg]
             ))
 
-(def dl-options ["--restrict-filenames"
-                "--no-progress" "-f mp4/best"])
+(def dl-options [
+  ;"--restrict-filenames"
+  "--no-progress" "-f mp4/best"])
 
 (def dl-options-simulate
   (conj dl-options "-s"))
@@ -17,7 +18,7 @@
    (apply
     conj
     ["youtube-dl"]
-    (conj options url :dir (cfg/save-path-t))))
+    (conj options url :dir (cfg/save-path))))
 
 ;; Непосредственое скачивание
 (defn download
@@ -43,6 +44,7 @@
   (cond
     (some? (re-find #"youtube\.com" word)) true
     (some? (re-find #"youtu\.be" word)) true
+    (some? (re-find #"vimeo\.com" word)) true
     :else false))
 
 ;; String -> String

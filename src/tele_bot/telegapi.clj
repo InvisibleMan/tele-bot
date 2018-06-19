@@ -2,7 +2,7 @@
   (:require [tele-bot.utils :as ut]
             [tele-bot.utils :as log]
             [tele-bot.config :as cfg]
-            [org.httpkit.client :as http]
+            [clj-http.client :as http]
             [tele-bot.telegapi-util :as tgu]
             [tele-bot.response-format :as fmt]))
 

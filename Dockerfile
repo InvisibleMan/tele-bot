@@ -39,8 +39,9 @@ COPY project.clj /usr/src/app/
 RUN lein deps
 COPY . /usr/src/app
 
-ENV SAVE_PATH=/var/data/downloads
-RUN mkdir -p /var/data/downloads
+ENV BOT_SAVE_PATH=/var/data/downloads
+RUN mkdir -p $BOT_SAVE_PATH
 
 RUN lein uberjar
-CMD ["java", "-jar", "target/tele-bot-1.0.0-SNAPSHOT-standalone.jar"]
+
+ENTRYPOINT ["./entrypoint.sh"]

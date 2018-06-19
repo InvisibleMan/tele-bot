@@ -7,3 +7,4 @@ target
 example.policy
 .nrepl-port
 *.code-workspace
+*.retry

@@ -7,7 +7,7 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [environ "1.0.1"]
                  [cheshire "5.5.0"]
-                 [http-kit "2.1.19"]
+                 [clj-http "3.9.0"]
                  ]
   :main ^:skip-aot tele-bot.app
   :uberjar "1.0.0-SNAPSHOT.jar"
